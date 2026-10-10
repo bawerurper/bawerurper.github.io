@@ -1,0 +1,2541 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VocabMaster - Akıllı İngilizce Flash Kartlar & Desteler</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="decks_data.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --secondary: #ec4899;
+      --accent: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --radius: 16px;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #0b0f19;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 60px;
+    }
+
+    /* DECK HOME (Exact match to screenshot) */
+    .deck-home-container {
+      width: 100%;
+      max-width: 440px;
+      margin: 10px auto 40px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .deck-cards-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .deck-card-item {
+      background: #141b2d;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 18px 20px 16px 20px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    .deck-card-item:hover {
+      background: #19233a;
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+    }
+
+    .deck-card-item:active {
+      transform: scale(0.99);
+    }
+
+    .deck-card-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .deck-card-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .deck-card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.2px;
+      line-height: 1.3;
+    }
+
+    .deck-card-sub {
+      font-size: 0.86rem;
+      color: #94a3b8;
+      margin-top: 5px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .deck-card-arrow {
+      color: #64748b;
+      margin-top: 4px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .deck-card-item:hover .deck-card-arrow {
+      color: #94a3b8;
+      transform: translateX(3px);
+    }
+
+    .deck-card-progress-track {
+      margin-top: 14px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .deck-card-progress-fill {
+      height: 100%;
+      background: #10b981;
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .btn-new-deck-pill {
+      background: #f1f5f9;
+      color: #0f172a;
+      border: none;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 9999px;
+      padding: 14px 20px;
+      width: 100%;
+      margin-top: 16px;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .btn-new-deck-pill:hover {
+      background: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-settings-pill {
+      background: #141b2d;
+      color: #f1f5f9;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 9999px;
+      padding: 13px 20px;
+      width: 100%;
+      margin-top: 10px;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-settings-pill:hover {
+      background: #1c273e;
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    /* STUDY SCREEN HEADER */
+    .study-screen-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .study-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+
+    .btn-back-decks {
+      background: rgba(30, 41, 59, 0.7);
+      color: #94a3b8;
+      border: 1px solid var(--card-border);
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-back-decks:hover {
+      background: #334155;
+      color: #fff;
+      border-color: #64748b;
+    }
+
+    .study-deck-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #ffffff;
+      text-align: center;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-header-settings {
+      background: rgba(30, 41, 59, 0.7);
+      color: #94a3b8;
+      border: 1px solid var(--card-border);
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .btn-header-settings:hover {
+      background: #334155;
+      color: #fff;
+    }
+
+    /* TABS */
+    .nav-tabs {
+      display: flex;
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(8px);
+      padding: 5px;
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
+      gap: 4px;
+      margin-bottom: 14px;
+      width: 100%;
+      max-width: 640px;
+    }
+
+    .nav-tab {
+      flex: 1;
+      padding: 9px 10px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.85rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .nav-tab.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+    }
+
+    /* Stats Overview */
+    .stats-container {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      max-width: 580px;
+      margin-bottom: 16px;
+    }
+
+    .stat-box {
+      flex: 1;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1.5px solid var(--card-border);
+      border-radius: 14px;
+      padding: 10px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      user-select: none;
+    }
+
+    .stat-box.stat-clickable {
+      cursor: pointer;
+    }
+
+    .stat-box.stat-clickable:hover {
+      background: rgba(30, 41, 59, 1);
+      border-color: #64748b;
+      transform: translateY(-2px);
+    }
+
+    /* Active state for Bu Deste (Tümü) */
+    .stat-box.stat-clickable#statBoxAll.active {
+      border-color: var(--primary);
+      background: rgba(99, 102, 241, 0.18);
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+    }
+
+    /* Active state for Öğrenildi (Bildiklerim) */
+    .stat-box.stat-clickable#statBoxLearned.active {
+      border-color: var(--success);
+      background: rgba(16, 185, 129, 0.18);
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+    }
+
+    /* Active state for Zorlanılan (Zorlandıklarım) */
+    .stat-box.stat-clickable#statBoxStruggling.active {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.18);
+      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+    }
+
+    /* Active state for Kalanlar (Kalan Kelimeler) */
+    .stat-box.stat-clickable#statBoxRemaining.active {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.18);
+      box-shadow: 0 4px 16px rgba(56, 189, 248, 0.35);
+    }
+
+    .stat-val {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-top: 4px;
+      letter-spacing: 0.3px;
+      text-align: center;
+    }
+
+    .stat-filter-hint {
+      font-size: 0.62rem;
+      color: #64748b;
+      margin-top: 2px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      text-align: center;
+    }
+
+    .stat-box.active .stat-filter-hint {
+      color: #cbd5e1;
+      font-weight: 700;
+    }
+
+    @media (max-width: 580px) {
+      .stats-container {
+        gap: 6px;
+      }
+      .stat-val {
+        font-size: 1.1rem;
+      }
+      .stat-label {
+        font-size: 0.64rem;
+      }
+      .stat-filter-hint {
+        display: none;
+      }
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      width: 100%;
+      max-width: 520px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .progress-bar-bg {
+      height: 7px;
+      background: #334155;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+      border-radius: 10px;
+    }
+
+    /* Flashcard Scene */
+    .scene {
+      width: 100%;
+      max-width: 520px;
+      min-height: 330px;
+      perspective: 1200px;
+      margin-bottom: 20px;
+    }
+
+    .flashcard {
+      width: 100%;
+      min-height: 330px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.55s cubic-bezier(0.34, 1.3, 0.64, 1);
+      cursor: pointer;
+    }
+
+    .flashcard.is-flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+      user-select: none;
+      overflow-y: auto;
+    }
+
+    .card-face-front {
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border-color: rgba(99, 102, 241, 0.35);
+    }
+
+    .card-face-back {
+      background: linear-gradient(145deg, #241442, #18182b);
+      border-color: rgba(236, 72, 153, 0.35);
+      transform: rotateY(180deg);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .badge-deck {
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      background: rgba(99, 102, 241, 0.2);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+    }
+
+    .badge-deck-back {
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      background: rgba(236, 72, 153, 0.2);
+      color: #f472b6;
+      border: 1px solid rgba(236, 72, 153, 0.4);
+    }
+
+    .badge-status {
+      font-size: 0.74rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      display: none;
+    }
+
+    .badge-status.known {
+      display: inline-flex;
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .badge-status.struggling {
+      display: inline-flex;
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .card-center {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin: auto 0;
+    }
+
+    .card-word {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .card-word.long-text {
+      font-size: 1.45rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .card-sentence-box {
+      border-radius: 12px;
+      padding: 12px 14px;
+      width: 100%;
+      text-align: left;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+
+    .card-sentence-box-front {
+      background: rgba(0, 0, 0, 0.35);
+      border-left: 3px solid var(--accent);
+    }
+
+    .card-sentence-box-back {
+      background: rgba(0, 0, 0, 0.35);
+      border-left: 3px solid var(--secondary);
+    }
+
+    .sentence-en {
+      color: #e0e7ff;
+      font-weight: 600;
+      font-size: 0.88rem;
+    }
+
+    .sentence-tr {
+      color: #cbd5e1;
+      font-size: 0.84rem;
+      white-space: pre-line;
+    }
+
+    .card-bottom-hint {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .action-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 11px 16px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-secondary {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid var(--card-border);
+      flex: 1;
+    }
+
+    .btn-secondary:hover {
+      background: #334155;
+      border-color: #475569;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      flex: 1.3;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      flex: 1;
+    }
+
+    .btn-success:hover {
+      background: rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #f87171;
+      flex: 1;
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.3);
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 12px;
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: #334155;
+    }
+
+    /* Quiz View */
+    .quiz-container {
+      display: none;
+      width: 100%;
+      max-width: 520px;
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .quiz-question-box {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .quiz-prompt {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .quiz-target-word {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .quiz-opt-btn {
+      padding: 13px 16px;
+      border-radius: 12px;
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      color: #fff;
+      font-size: 0.92rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      line-height: 1.4;
+    }
+
+    .quiz-opt-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #2a374a;
+      transform: translateX(4px);
+    }
+
+    .quiz-opt-btn.correct {
+      background: rgba(16, 185, 129, 0.25) !important;
+      border-color: var(--success) !important;
+      color: #34d399 !important;
+    }
+
+    .quiz-opt-btn.wrong {
+      background: rgba(239, 68, 68, 0.25) !important;
+      border-color: var(--danger) !important;
+      color: #f87171 !important;
+    }
+
+    /* Match View */
+    .match-container {
+      display: none;
+      width: 100%;
+      max-width: 580px;
+    }
+
+    .match-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 480px) {
+      .match-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .match-tile {
+      background: #1e293b;
+      border: 2px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 80px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.88rem;
+      transition: all 0.2s;
+      user-select: none;
+      word-break: break-word;
+    }
+
+    .match-tile:hover {
+      border-color: var(--accent);
+      background: #283548;
+    }
+
+    .match-tile.selected {
+      border-color: var(--primary);
+      background: rgba(99, 102, 241, 0.25);
+      color: #a5b4fc;
+      transform: scale(0.97);
+    }
+
+    .match-tile.matched {
+      border-color: var(--success);
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .match-tile.mismatch {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.25);
+      color: #f87171;
+    }
+
+    /* Manager & Direct Import View */
+    .manager-container {
+      display: none;
+      width: 100%;
+      max-width: 740px;
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .import-hero-box {
+      background: #0f172a;
+      border: 1.5px solid rgba(99, 102, 241, 0.5);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    .import-textarea {
+      width: 100%;
+      min-height: 120px;
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      color: #fff;
+      padding: 12px 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.86rem;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      margin: 10px 0;
+    }
+
+    .modal-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+      background: #0f172a;
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 500px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    input, select {
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 11px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    .search-input {
+      width: 100%;
+      margin-bottom: 12px;
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+    }
+
+    .cards-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 420px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      padding: 12px 16px;
+      border-radius: 10px;
+      transition: background 0.15s;
+    }
+
+    .list-item:hover {
+      background: #243248;
+    }
+
+    .list-item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-width: 88%;
+    }
+
+    .list-item-en {
+      font-weight: 700;
+      color: #fff;
+      font-size: 0.96rem;
+    }
+
+    .list-item-tr {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: #f87171;
+      cursor: pointer;
+      font-size: 1.15rem;
+      padding: 6px 10px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .delete-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    .edit-btn {
+      background: transparent;
+      border: none;
+      color: #38bdf8;
+      cursor: pointer;
+      font-size: 1.15rem;
+      padding: 6px 8px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .edit-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+    }
+
+    .btn-add-sentence-hint {
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px dashed rgba(99, 102, 241, 0.45);
+      color: #a5b4fc;
+      border-radius: 10px;
+      padding: 7px 16px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-add-sentence-hint:hover {
+      background: rgba(99, 102, 241, 0.28);
+      border-color: #818cf8;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .badge-sentence-pill {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 1px 7px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .badge-no-sentence-pill {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px dashed rgba(245, 158, 11, 0.4);
+      padding: 1px 7px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .list-item-sentence-preview {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      font-style: italic;
+      margin-top: 3px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Modal Overlay & Box */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-box {
+      background: #141b2d;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+      animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .keyboard-guide {
+      margin-top: 24px;
+      font-size: 0.78rem;
+      color: #64748b;
+      text-align: center;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .kbd {
+      background: #1e293b;
+      padding: 2px 7px;
+      border-radius: 5px;
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== DECK HOME SCREEN (Matches uploaded screenshot) ==================== -->
+  <div class="deck-home-container" id="viewDeckHome">
+    <div class="deck-cards-list" id="deckCardsList"></div>
+    <button class="btn-new-deck-pill" id="btnHomeNewDeck">+ Yeni Deste</button>
+    <button class="btn-settings-pill" id="btnHomeSettings">⚙ Genel Ayarlar</button>
+  </div>
+
+  <!-- ==================== STUDY SCREEN (Opened when a deck is clicked) ==================== -->
+  <div class="study-screen-container" id="viewStudyScreen" style="display: none; width: 100%; max-width: 680px;">
+    <!-- Study Screen Header -->
+    <div class="study-header">
+      <button class="btn-back-decks" id="btnBackToDecks" title="Destelere Dön">‹ Desteler</button>
+      <h2 class="study-deck-title" id="studyDeckTitle">Deste</h2>
+      <button class="btn-header-settings" id="btnStudySettings" title="Ayarlar / Yönet">⚙</button>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="cards">🗂️ Flash Kartlar</button>
+      <button class="nav-tab" data-tab="quiz">🎯 Quiz / Test</button>
+      <button class="nav-tab" data-tab="match">🧩 Eşleştirme</button>
+    </nav>
+
+  <!-- Interactive Stats & Filter Overview -->
+  <div class="stats-container">
+    <div class="stat-box stat-clickable active" id="statBoxAll" onclick="setCardFilter('all')" title="Tüm kelimeleri göster">
+      <span class="stat-val" id="statTotal">0</span>
+      <span class="stat-label">Bu Deste</span>
+      <span class="stat-filter-hint">Tümü</span>
+    </div>
+    <div class="stat-box stat-clickable" id="statBoxLearned" onclick="setCardFilter('known')" title="Sadece bildiklerimi göster">
+      <span class="stat-val" style="color: #34d399;" id="statLearned">0</span>
+      <span class="stat-label">Öğrenildi</span>
+      <span class="stat-filter-hint">Bildiklerim</span>
+    </div>
+    <div class="stat-box stat-clickable" id="statBoxStruggling" onclick="setCardFilter('struggling')" title="Sadece zorlandıklarımı göster">
+      <span class="stat-val" style="color: #f87171;" id="statStruggling">0</span>
+      <span class="stat-label">Zorlanılan</span>
+      <span class="stat-filter-hint">Zorlandıklarım</span>
+    </div>
+    <div class="stat-box stat-clickable" id="statBoxRemaining" onclick="setCardFilter('remaining')" title="Kalan kelimeleri göster (Tüm Deste - [Bildiklerim + Zorlandıklarım])">
+      <span class="stat-val" style="color: #38bdf8;" id="statRemaining">0</span>
+      <span class="stat-label">Kalanlar</span>
+      <span class="stat-filter-hint">Kalan Kelimeler</span>
+    </div>
+    <div class="stat-box" id="statBoxAccuracy" title="Başarı Oranı">
+      <span class="stat-val" style="color: #f59e0b;" id="statAccuracy">0%</span>
+      <span class="stat-label">Başarı</span>
+      <span class="stat-filter-hint">Oran</span>
+    </div>
+  </div>
+
+
+
+  <!-- ==================== 1. FLASHCARD VIEW ==================== -->
+  <div id="view-cards" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span id="counterText">Kart 1 / 10</span>
+        <span id="dirIndicator">🇬🇧 EN ➔ 🇹🇷 TR</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+    </div>
+
+    <!-- 3D Flipping Card -->
+    <div class="scene">
+      <div class="flashcard" id="flashcard">
+        <!-- Front -->
+        <div class="card-face card-face-front">
+          <div class="card-top">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="badge-deck" id="cardDeckBadge">Deste</span>
+              <span class="badge-status" id="cardStatusBadge"></span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <button class="icon-btn" id="btnEditCurrentFront" title="Kartı Düzenle / Cümle Ekle (E)">✏️</button>
+              <button class="icon-btn" id="btnSpeakFront" title="Kelimeyi Dinle (S)">🔊</button>
+            </div>
+          </div>
+          <div class="card-center">
+            <div class="card-word" id="frontWord">Term</div>
+            <div class="card-sentence-box card-sentence-box-front" id="sentenceBoxFront" style="display:none;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                <div class="sentence-en" id="sentenceEn"></div>
+                <button class="icon-btn" id="btnSpeakSentence" title="Cümleyi Dinle" style="width:30px; height:30px; min-width:30px; font-size:0.85rem; padding:0; border-radius:8px; flex-shrink:0;">🔊</button>
+              </div>
+            </div>
+            <div id="noSentencePromptFront" style="display:none; margin-top:12px;">
+              <button type="button" class="btn-add-sentence-hint" id="btnAddSentenceHint">
+                + Örnek Cümle Ekle ✍️
+              </button>
+            </div>
+          </div>
+          <div class="card-bottom-hint">
+            <span>💡 Çevirmek için tıkla veya [Boşluk] tuşuna bas</span>
+          </div>
+        </div>
+
+        <!-- Back -->
+        <div class="card-face card-face-back">
+          <div class="card-top">
+            <span class="badge-deck-back" id="cardDeckBadgeBack">TÜRKÇE ANLAMI</span>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <button class="icon-btn" id="btnEditCurrentBack" title="Kartı Düzenle / Cümle Ekle (E)">✏️</button>
+              <button class="icon-btn" id="btnSpeakBack" title="İngilizceyi Dinle">🔊</button>
+            </div>
+          </div>
+          <div class="card-center">
+            <div class="card-word" id="backWord" style="color:#f472b6;">Anlam</div>
+            <div class="card-sentence-box card-sentence-box-back" id="sentenceBoxBack" style="display:none;">
+              <div class="sentence-tr" id="sentenceTr"></div>
+            </div>
+          </div>
+          <div class="card-bottom-hint">
+            <span>🔄 Geri dönmek için tıkla</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions & Controls -->
+    <div class="controls">
+      <div class="action-row">
+        <button class="btn btn-danger" id="btnAgain" title="Tekrar Et (1)">❌ Zorlandım</button>
+        <button class="btn btn-primary" id="btnFlip">🔄 Çevir [Boşluk]</button>
+        <button class="btn btn-success" id="btnKnown" title="Öğrendim (2)">✅ Biliyorum</button>
+      </div>
+
+      <div class="action-row" style="margin-top: 4px;">
+        <button class="btn btn-secondary" id="btnPrev">← Önceki</button>
+        <button class="icon-btn" id="btnShuffle" title="Karıştır">🔀</button>
+        <button class="icon-btn" id="btnSwapDir" title="Dili Ters Çevir (EN ⇄ TR)">🔁</button>
+        <button class="icon-btn" id="btnAutoPlay" title="Otomatik Oynat">▶️</button>
+        <button class="btn btn-secondary" id="btnNext">Sonraki →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 2. QUIZ VIEW ==================== -->
+  <div class="quiz-container" id="view-quiz">
+    <div class="quiz-question-box">
+      <div class="quiz-prompt" id="quizScopePrompt">Quiz Testi</div>
+      <div class="quiz-target-word" id="quizQuestionWord">trip</div>
+    </div>
+    <div class="quiz-options" id="quizOptions">
+      <!-- Options injected by JS -->
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-size: 0.85rem; color: var(--text-muted);" id="quizScoreText">Soru: 1 / 10 | Doğru: 0</span>
+      <button class="btn btn-primary" id="btnNextQuiz" style="display: none; padding: 10px 16px;">Sonraki Soru →</button>
+    </div>
+  </div>
+
+  <!-- ==================== 3. MATCHING GAME VIEW ==================== -->
+  <div class="match-container" id="view-match">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+      <span style="font-weight: 600; color: var(--text-muted);" id="matchStatusText">Eşleşen: 0 / 6 çift</span>
+      <button class="btn btn-secondary" id="btnRestartMatch" style="padding: 8px 14px; font-size: 0.85rem;">Yeniden Başlat 🔄</button>
+    </div>
+    <div class="match-grid" id="matchGrid">
+      <!-- Tiles injected by JS -->
+    </div>
+  </div>
+  </div><!-- End of viewStudyScreen -->
+
+  <!-- ==================== 4. MANAGER & DIRECT IMPORT VIEW ==================== -->
+  <div class="manager-container" id="view-manage" style="display: none; width: 100%; max-width: 680px;">
+    <div class="study-header" style="margin-bottom: 20px;">
+      <button class="btn-back-decks" id="btnManageBackToDecks" title="Destelere Dön">‹ Desteler</button>
+      <h2 class="study-deck-title">⚙ Genel Ayarlar & Yönetim</h2>
+      <div style="width: 38px;"></div>
+    </div>
+    <!-- Direct Import Hero Box -->
+    <div class="import-hero-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap:wrap; gap:8px;">
+        <h3 style="font-size: 1.1rem; color: #fff;">📥 Metin veya Dosya İçe Aktar</h3>
+        <div>
+          <input type="file" id="anyTextFileInput" accept="*/*" style="display:none;">
+          <button type="button" class="btn btn-secondary" id="btnUploadAnyFile" style="padding: 7px 12px; font-size: 0.8rem;">
+            📁 Dosya Seç (.txt, .json)
+          </button>
+        </div>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">
+        İster düz metin (<code>kelime = anlamı</code> veya <code>kelime - anlamı</code>), ister JSON verisini doğrudan buraya yapıştırın.
+      </p>
+
+      <textarea id="bulkImportTextarea" class="import-textarea" placeholder="Buraya kelimeleri yapıştırın..."></textarea>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <span style="font-size: 0.8rem; color:#38bdf8;" id="previewCountText">Seçili Desteye Eklenecek</span>
+        <div style="display:flex; gap:6px;">
+          <button type="button" class="btn btn-primary" id="btnAppendBulk" style="padding:8px 14px; font-size:0.82rem;">
+            ➕ Seçili Desteye Ekle
+          </button>
+          <button type="button" class="btn btn-success" id="btnReplaceBulk" style="padding:8px 14px; font-size:0.82rem;">
+            🔄 Desteyi Değiştir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Manual Card Form (Without any 'Kelime Türü' field) -->
+    <h3 style="margin-bottom: 10px; font-size: 1.05rem;">➕ Seçili Desteye Tek Kart Ekle</h3>
+    <form class="modal-form" id="cardForm">
+      <div class="form-row">
+        <input id="inputEn" placeholder="İngilizce Kelime / Kalıp" required>
+        <input id="inputTr" placeholder="Türkçe Anlamı" required>
+      </div>
+      <div class="form-row">
+        <select id="selectTargetDeck">
+          <!-- Injected dynamically -->
+        </select>
+        <input id="inputSentenceEn" placeholder="Örnek Cümle (İngilizce - İsteğe bağlı)">
+      </div>
+      <div class="form-row" style="grid-template-columns: 1fr;">
+        <input id="inputSentenceTr" placeholder="Örnek Cümle Çevirisi (Türkçe - İsteğe bağlı)">
+      </div>
+      <div style="display: flex; justify-content: flex-end;">
+        <button type="submit" class="btn btn-primary" style="padding: 9px 22px;">Kartı Kaydet</button>
+      </div>
+    </form>
+
+    <!-- Header Actions & Search -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap:wrap; gap:8px;">
+      <h3 style="font-size: 1.05rem;">📚 Bu Destedeki Kartlar (<span id="managerTotalCount">0</span>)</h3>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-secondary" id="btnExportJson" style="padding: 6px 12px; font-size: 0.78rem;">
+          📤 JSON İndir
+        </button>
+        <button class="btn btn-danger" id="btnResetToDefaults" style="padding: 6px 12px; font-size: 0.78rem;">
+          Yedekten Sıfırla
+        </button>
+      </div>
+    </div>
+
+    <input type="text" id="cardSearchInput" class="search-input" placeholder="🔍 Bu destede ara...">
+
+    <div class="cards-list" id="managerCardList">
+      <!-- Injected dynamically -->
+    </div>
+  </div>
+
+  <div class="keyboard-guide">
+    <span><span class="kbd">Boşluk</span> Çevir</span>
+    <span><span class="kbd">← / →</span> Önceki / Sonraki</span>
+    <span><span class="kbd">1</span> Zorlandım</span>
+    <span><span class="kbd">2</span> Biliyorum</span>
+    <span><span class="kbd">E</span> Düzenle / Cümle Ekle</span>
+    <span><span class="kbd">S</span> Telaffuz</span>
+  </div>
+
+  <!-- EDIT CARD & SENTENCES MODAL -->
+  <div class="modal-overlay" id="editCardModal" style="display: none;" onclick="if(event.target===this) closeEditModal();">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.15rem; color: #fff; display:flex; align-items:center; gap:8px;">
+          ✏️ Kelimeyi & Cümleleri Düzenle
+        </h3>
+        <button type="button" class="icon-btn" onclick="closeEditModal()" style="font-size: 1rem; width:32px; height:32px;">✕</button>
+      </div>
+
+      <form id="editCardForm">
+        <input type="hidden" id="editCardId">
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 0.82rem; font-weight: 600; color: #94a3b8; display:block; margin-bottom: 5px;">İngilizce Kelime / Kalıp *</label>
+          <input id="editTerm" style="width: 100%;" required>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 0.82rem; font-weight: 600; color: #94a3b8; display:block; margin-bottom: 5px;">Türkçe Anlamı *</label>
+          <input id="editTranslation" style="width: 100%;" required>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 0.82rem; font-weight: 600; color: #38bdf8; display:block; margin-bottom: 5px;">
+            💬 İngilizce Örnek Cümle <span style="font-weight:400; font-size:0.75rem; color:#94a3b8;">(Kartın Ön Yüzünde Görünür)</span>
+          </label>
+          <textarea id="editExample" rows="2" style="width: 100%; background: #1e293b; border: 1px solid var(--card-border); color: #fff; padding: 10px 12px; border-radius: 8px; font-size: 0.88rem; resize: vertical; line-height: 1.4;" placeholder="Örnek: She decided to look up the new word."></textarea>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="font-size: 0.82rem; font-weight: 600; color: #f472b6; display:block; margin-bottom: 5px;">
+            🇹🇷 Türkçe Cümle Çevirisi <span style="font-weight:400; font-size:0.75rem; color:#94a3b8;">(Kartın Arka Yüzünde Görünür)</span>
+          </label>
+          <textarea id="editExampleTranslation" rows="2" style="width: 100%; background: #1e293b; border: 1px solid var(--card-border); color: #fff; padding: 10px 12px; border-radius: 8px; font-size: 0.88rem; resize: vertical; line-height: 1.4;" placeholder="Örnek: Yeni kelimeye sözlükten bakmaya karar verdi."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" class="btn btn-secondary" onclick="closeEditModal()" style="padding: 10px 16px;">İptal</button>
+          <button type="submit" class="btn btn-primary" style="padding: 10px 22px;">💾 Değişiklikleri Kaydet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let decksData = [];
+    let selectedDeckId = '';
+    let currentStatusFilter = 'all'; // 'all', 'known', or 'struggling'
+    let currentCards = [];
+    let currentIndex = 0;
+    let isFlipped = false;
+    let isDirectionEnTr = true;
+    let autoPlayInterval = null;
+    let searchQuery = '';
+
+    // Initialize decks from localStorage or builtin decks_data.js
+    function initDecks() {
+      try {
+        const stored = localStorage.getItem('vocabmaster_all_decks');
+        if (stored) {
+          decksData = JSON.parse(stored);
+        }
+      } catch(e) {}
+
+      if (!decksData || decksData.length === 0) {
+        if (window.RAW_DECKS_DATA && window.RAW_DECKS_DATA.decks) {
+          decksData = JSON.parse(JSON.stringify(window.RAW_DECKS_DATA.decks));
+        } else {
+          decksData = [{ id: 'default', name: 'Genel', cards: [] }];
+        }
+      }
+
+      // Ensure every deck has cards array and strip grammar types
+      decksData.forEach(d => {
+        if (!d.cards) d.cards = [];
+        d.cards.forEach(c => {
+          delete c.type; // Remove all grammar types (isim, fiil, etc.)
+        });
+      });
+
+      // Default selected deck is the first deck
+      if (!selectedDeckId || !decksData.some(d => d.id === selectedDeckId)) {
+        selectedDeckId = decksData[0] ? decksData[0].id : '';
+      }
+
+      persistDecks();
+      renderDeckSelector();
+      updateActiveCardSet();
+    }
+
+    function persistDecks() {
+      localStorage.setItem('vocabmaster_all_decks', JSON.stringify(decksData));
+    }
+
+    // Audio synthesizer beeps
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playBeep(type) {
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+        if (type === 'correct') {
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.15);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'wrong') {
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.setValueAtTime(180, now + 0.1);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        }
+      } catch(e) {}
+    }
+
+    // Text to Speech
+    function speak(text, lang = 'en-US') {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang;
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // RENDER DECK HOME (Matches user's screenshot exactly)
+    function renderDeckHome() {
+      const container = document.getElementById('deckCardsList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      decksData.forEach(deck => {
+        const cards = deck.cards || [];
+        const total = cards.length;
+        const known = cards.filter(c => c.status === 'known').length;
+        const struggling = cards.filter(c => c.status === 'struggling').length;
+        const pct = total > 0 ? Math.round((known / total) * 100) : 0;
+
+        let subText = `${total} kart · ${known} biliniyor`;
+        if (struggling > 0) {
+          subText += ` · ${struggling} tekrar bekliyor`;
+        }
+
+        const cardEl = document.createElement('div');
+        cardEl.className = 'deck-card-item';
+        cardEl.title = `${deck.name} destesini çalış`;
+        cardEl.onclick = () => openDeck(deck.id);
+
+        cardEl.innerHTML = `
+          <div class="deck-card-main">
+            <div class="deck-card-info">
+              <div class="deck-card-title">${escapeHtml(deck.name)}</div>
+              <div class="deck-card-sub">${subText}</div>
+            </div>
+            <div class="deck-card-arrow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="deck-card-progress-track">
+            <div class="deck-card-progress-fill" style="width: ${pct}%;"></div>
+          </div>
+        `;
+        container.appendChild(cardEl);
+      });
+
+      updateTargetDeckDropdown();
+    }
+
+    function updateTargetDeckDropdown() {
+      const selectDeck = document.getElementById('selectTargetDeck');
+      if (selectDeck) {
+        selectDeck.innerHTML = '';
+        decksData.forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d.id;
+          opt.textContent = d.name;
+          if (d.id === selectedDeckId) opt.selected = true;
+          selectDeck.appendChild(opt);
+        });
+      }
+    }
+
+    function renderDeckSelector() {
+      renderDeckHome();
+    }
+
+    function showDeckHome() {
+      const home = document.getElementById('viewDeckHome');
+      const study = document.getElementById('viewStudyScreen');
+      const manage = document.getElementById('view-manage');
+      if (home) home.style.display = 'flex';
+      if (study) study.style.display = 'none';
+      if (manage) manage.style.display = 'none';
+      renderDeckHome();
+    }
+
+    function openDeck(deckId) {
+      selectedDeckId = deckId;
+      currentIndex = 0;
+      currentStatusFilter = 'all';
+
+      const currentDeck = decksData.find(d => d.id === selectedDeckId) || decksData[0];
+      if (currentDeck) {
+        const titleEl = document.getElementById('studyDeckTitle');
+        if (titleEl) titleEl.textContent = currentDeck.name;
+      }
+
+      const home = document.getElementById('viewDeckHome');
+      const study = document.getElementById('viewStudyScreen');
+      const manage = document.getElementById('view-manage');
+      if (home) home.style.display = 'none';
+      if (manage) manage.style.display = 'none';
+      if (study) study.style.display = 'flex';
+
+      switchStudyTab('cards');
+      updateActiveCardSet();
+    }
+
+    function openSettings() {
+      const home = document.getElementById('viewDeckHome');
+      const study = document.getElementById('viewStudyScreen');
+      const manage = document.getElementById('view-manage');
+      if (home) home.style.display = 'none';
+      if (study) study.style.display = 'none';
+      if (manage) manage.style.display = 'block';
+      updateTargetDeckDropdown();
+      renderManagerList();
+    }
+
+    // Card Filter (all, known, struggling, remaining) integrated into stat boxes
+    function setCardFilter(filterType) {
+      currentStatusFilter = filterType;
+
+      const boxAll = document.getElementById('statBoxAll');
+      const boxLearned = document.getElementById('statBoxLearned');
+      const boxStruggling = document.getElementById('statBoxStruggling');
+      const boxRemaining = document.getElementById('statBoxRemaining');
+
+      if (boxAll) boxAll.classList.toggle('active', currentStatusFilter === 'all');
+      if (boxLearned) boxLearned.classList.toggle('active', currentStatusFilter === 'known');
+      if (boxStruggling) boxStruggling.classList.toggle('active', currentStatusFilter === 'struggling');
+      if (boxRemaining) boxRemaining.classList.toggle('active', currentStatusFilter === 'remaining');
+
+      currentIndex = 0;
+      updateActiveCardSet();
+    }
+
+    // COMPUTE CURRENT ACTIVE CARDS POOL
+    function updateActiveCardSet() {
+      const currentDeck = decksData.find(d => d.id === selectedDeckId) || decksData[0];
+      if (!currentDeck) return;
+
+      let pool = currentDeck.cards || [];
+
+      if (currentStatusFilter === 'known') {
+        pool = pool.filter(c => c.status === 'known');
+      } else if (currentStatusFilter === 'struggling') {
+        pool = pool.filter(c => c.status === 'struggling');
+      } else if (currentStatusFilter === 'remaining') {
+        // Tüm Deste - (Bildiklerim + Zorlandıklarım)
+        pool = pool.filter(c => c.status !== 'known' && c.status !== 'struggling');
+      }
+
+      currentCards = pool;
+      if (currentIndex >= currentCards.length) {
+        currentIndex = 0;
+      }
+
+      updateStats(currentDeck);
+      renderCard(currentDeck);
+      renderManagerList();
+    }
+
+    function updateStats(currentDeck) {
+      const allDeckCards = currentDeck ? (currentDeck.cards || []) : [];
+      const total = allDeckCards.length;
+      const learned = allDeckCards.filter(c => c.status === 'known').length;
+      const struggling = allDeckCards.filter(c => c.status === 'struggling').length;
+      const remaining = Math.max(0, total - (learned + struggling));
+      const pct = total > 0 ? Math.round((learned / total) * 100) : 0;
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statLearned').textContent = learned;
+      document.getElementById('statStruggling').textContent = struggling;
+      document.getElementById('statRemaining').textContent = remaining;
+      document.getElementById('statAccuracy').textContent = pct + '%';
+      document.getElementById('managerTotalCount').textContent = currentCards.length;
+
+
+      // Update active state on stat boxes
+      const boxAll = document.getElementById('statBoxAll');
+      const boxLearned = document.getElementById('statBoxLearned');
+      const boxStruggling = document.getElementById('statBoxStruggling');
+      const boxRemaining = document.getElementById('statBoxRemaining');
+      if (boxAll) boxAll.classList.toggle('active', currentStatusFilter === 'all');
+      if (boxLearned) boxLearned.classList.toggle('active', currentStatusFilter === 'known');
+      if (boxStruggling) boxStruggling.classList.toggle('active', currentStatusFilter === 'struggling');
+      if (boxRemaining) boxRemaining.classList.toggle('active', currentStatusFilter === 'remaining');
+    }
+
+    // Create a new deck from remaining words
+    window.createDeckFromRemaining = function() {
+      const currentDeck = decksData.find(d => d.id === selectedDeckId) || decksData[0];
+      if (!currentDeck) return;
+
+      const remaining = (currentDeck.cards || []).filter(c => c.status !== 'known' && c.status !== 'struggling');
+      if (remaining.length === 0) {
+        alert('Bu destede kalan kelime bulunmuyor, hepsi çalışılmış!');
+        return;
+      }
+
+      const defaultName = `${currentDeck.name} (Kalan Kelimeler)`;
+      const deckName = prompt('Kalan kelimeler için yeni deste ismi girin:', defaultName);
+      if (!deckName || !deckName.trim()) return;
+
+      const newDeck = {
+        id: 'deck_' + Date.now(),
+        name: deckName.trim(),
+        cards: remaining.map(c => ({
+          ...c,
+          id: 'c_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+          status: 'new'
+        }))
+      };
+
+      decksData.push(newDeck);
+      selectedDeckId = newDeck.id;
+      currentStatusFilter = 'all';
+      persistDecks();
+      renderDeckSelector();
+      updateActiveCardSet();
+      alert(`🎉 "${deckName.trim()}" destesi ${remaining.length} kalan kelimeyle başarıyla oluşturuldu!`);
+    };
+
+    // RENDER CARD
+    function renderCard(currentDeck) {
+      const flashcardEl = document.getElementById('flashcard');
+      isFlipped = false;
+      flashcardEl.classList.remove('is-flipped');
+
+      const deckName = currentDeck ? currentDeck.name : 'Deste';
+
+      if (currentCards.length === 0) {
+        let emptyTitle = "Bu Deste Boş";
+        let emptyMsg = "Kart ekleyin veya dosya yükleyin.";
+        if (currentStatusFilter === 'known') {
+          emptyTitle = "Henüz Bildiğiniz Kart Yok 🎯";
+          emptyMsg = "Kartları çevirip 'Biliyorum' butonuna basarak bildikleriniz arasına ekleyebilirsiniz.";
+        } else if (currentStatusFilter === 'struggling') {
+          emptyTitle = "Zorlanılan Kart Yok 🎉";
+          emptyMsg = "Harika! Bu destede şu anda zorlandığınız kelime bulunmuyor.";
+        } else if (currentStatusFilter === 'remaining') {
+          emptyTitle = "Tüm Kelimeler Çalışıldı! 🎉";
+          emptyMsg = "Tebrikler! Bu destedeki tüm kelimeleri çalıştınız. Kalan kelime kalmadı.";
+        }
+
+        document.getElementById('frontWord').textContent = emptyTitle;
+        document.getElementById('backWord').textContent = emptyMsg;
+        document.getElementById('sentenceBoxFront').style.display = 'none';
+        document.getElementById('sentenceBoxBack').style.display = 'none';
+        const noSent = document.getElementById('noSentencePromptFront');
+        if (noSent) noSent.style.display = 'none';
+        document.getElementById('cardStatusBadge').style.display = 'none';
+        document.getElementById('cardDeckBadge').textContent = deckName;
+        document.getElementById('cardDeckBadgeBack').textContent = deckName;
+        document.getElementById('counterText').textContent = "0 / 0";
+        document.getElementById('progressBar').style.width = "0%";
+        return;
+      }
+
+      const card = currentCards[currentIndex];
+
+      const frontWord = isDirectionEnTr ? card.term : card.translation;
+      const backWord = isDirectionEnTr ? card.translation : card.term;
+
+      const frontEl = document.getElementById('frontWord');
+      frontEl.textContent = frontWord;
+      frontEl.className = 'card-word' + (frontWord.length > 25 ? ' long-text' : '');
+
+      const backEl = document.getElementById('backWord');
+      backEl.textContent = backWord;
+      backEl.className = 'card-word' + (backWord.length > 25 ? ' long-text' : '');
+
+      // Badges
+      document.getElementById('cardDeckBadge').textContent = deckName;
+      document.getElementById('cardDeckBadgeBack').textContent = deckName;
+
+      // Status Badge
+      const statusBadge = document.getElementById('cardStatusBadge');
+      statusBadge.className = 'badge-status';
+      if (card.status === 'known') {
+        statusBadge.textContent = '✓ Biliyorum';
+        statusBadge.classList.add('known');
+      } else if (card.status === 'struggling') {
+        statusBadge.textContent = '⚠️ Zorlanılan';
+        statusBadge.classList.add('struggling');
+      }
+
+      // Front Sentence Box (English Example Sentence)
+      const sentenceBoxFront = document.getElementById('sentenceBoxFront');
+      const sentenceEnEl = document.getElementById('sentenceEn');
+      const noSentencePrompt = document.getElementById('noSentencePromptFront');
+      if (card.example && card.example.trim()) {
+        sentenceBoxFront.style.display = 'block';
+        sentenceEnEl.textContent = card.example.trim();
+        if (noSentencePrompt) noSentencePrompt.style.display = 'none';
+      } else {
+        sentenceBoxFront.style.display = 'none';
+        sentenceEnEl.textContent = '';
+        if (noSentencePrompt) noSentencePrompt.style.display = 'block';
+      }
+
+      // Back Sentence Box (Turkish Example Translation)
+      const sentenceBoxBack = document.getElementById('sentenceBoxBack');
+      const sentenceTrEl = document.getElementById('sentenceTr');
+      if (card.exampleTranslation && card.exampleTranslation.trim()) {
+        sentenceBoxBack.style.display = 'block';
+        sentenceTrEl.textContent = card.exampleTranslation.trim();
+      } else {
+        sentenceBoxBack.style.display = 'none';
+        sentenceTrEl.textContent = '';
+      }
+
+      // Progress & Counter
+      document.getElementById('counterText').textContent = `Kart ${currentIndex + 1} / ${currentCards.length}`;
+      document.getElementById('dirIndicator').textContent = isDirectionEnTr ? '🇬🇧 EN ➔ 🇹🇷 TR' : '🇹🇷 TR ➔ 🇬🇧 EN';
+
+      const pct = ((currentIndex + 1) / currentCards.length) * 100;
+      document.getElementById('progressBar').style.width = pct + '%';
+    }
+
+    function toggleFlip() {
+      isFlipped = !isFlipped;
+      document.getElementById('flashcard').classList.toggle('is-flipped', isFlipped);
+    }
+
+    function nextCard() {
+      if (currentCards.length === 0) return;
+      currentIndex = (currentIndex + 1) % currentCards.length;
+      const currentDeck = decksData.find(d => d.id === selectedDeckId);
+      renderCard(currentDeck);
+    }
+
+    function prevCard() {
+      if (currentCards.length === 0) return;
+      currentIndex = (currentIndex - 1 + currentCards.length) % currentCards.length;
+      const currentDeck = decksData.find(d => d.id === selectedDeckId);
+      renderCard(currentDeck);
+    }
+
+    function shuffleCards() {
+      currentCards.sort(() => Math.random() - 0.5);
+      currentIndex = 0;
+      const currentDeck = decksData.find(d => d.id === selectedDeckId);
+      renderCard(currentDeck);
+    }
+
+    function markCurrentCard(status) {
+      if (currentCards.length === 0) return;
+      const current = currentCards[currentIndex];
+
+      // Update in active deck
+      const currentDeck = decksData.find(d => d.id === selectedDeckId);
+      if (currentDeck && currentDeck.cards) {
+        const found = currentDeck.cards.find(c => c.id === current.id);
+        if (found) {
+          found.status = status;
+        }
+      }
+
+      persistDecks();
+      playBeep(status === 'known' ? 'correct' : 'wrong');
+
+      if (currentStatusFilter !== 'all') {
+        updateActiveCardSet();
+      } else {
+        updateStats(currentDeck);
+        nextCard();
+      }
+    }
+
+    // ==================== QUIZ LOGIC ====================
+    let quizCurrentIdx = 0;
+    let quizScore = 0;
+    let quizPool = [];
+
+    function startQuiz() {
+      const currentDeck = decksData.find(d => d.id === selectedDeckId) || decksData[0];
+      const pool = currentDeck ? currentDeck.cards : [];
+
+      if (!pool || pool.length === 0) {
+        document.getElementById('quizQuestionWord').textContent = 'Kart Yok';
+        document.getElementById('quizOptions').innerHTML = '<p style="text-align:center;">Bu destede test yapacak kart bulunmuyor.</p>';
+        return;
+      }
+
+      quizPool = [...pool].sort(() => Math.random() - 0.5);
+      quizCurrentIdx = 0;
+      quizScore = 0;
+      renderQuizQuestion();
+    }
+
+    function renderQuizQuestion() {
+      const currentDeck = decksData.find(d => d.id === selectedDeckId);
+      const deckName = currentDeck ? currentDeck.name : 'Deste';
+
+      if (quizCurrentIdx >= quizPool.length) {
+        document.getElementById('quizQuestionWord').textContent = `🎉 Quiz Tamamlandı!`;
+        document.getElementById('quizOptions').innerHTML = `
+          <div style="text-align:center; padding: 20px; font-size:1.15rem;">
+            Toplam Başarı Skoru: <br>
+            <strong style="color:var(--success); font-size:2rem; display:block; margin: 10px 0;">${quizScore} / ${quizPool.length}</strong>
+            <button class="btn btn-primary" onclick="startQuiz()">Tekrar Başlat 🔄</button>
+          </div>
+        `;
+        document.getElementById('btnNextQuiz').style.display = 'none';
+        return;
+      }
+
+      const current = quizPool[quizCurrentIdx];
+      document.getElementById('quizScopePrompt').textContent = `${deckName} • Soru ${quizCurrentIdx + 1} / ${quizPool.length}`;
+      document.getElementById('quizQuestionWord').textContent = current.term;
+      document.getElementById('quizScoreText').textContent = `Doğru: ${quizScore} / ${quizPool.length}`;
+      document.getElementById('btnNextQuiz').style.display = 'none';
+
+      // Distractors from same deck or other decks if needed
+      const currentDeckCards = currentDeck ? currentDeck.cards : [];
+      let distractors = currentDeckCards
+        .filter(c => c.id !== current.id)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3);
+
+      if (distractors.length < 3) {
+        // Borrow from other decks if single deck has few cards
+        let otherCards = [];
+        decksData.forEach(d => { if (d.cards) otherCards.push(...d.cards); });
+        const moreDistractors = otherCards
+          .filter(c => c.id !== current.id)
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 3 - distractors.length);
+        distractors.push(...moreDistractors);
+      }
+
+      const choices = [current, ...distractors].sort(() => Math.random() - 0.5);
+      const container = document.getElementById('quizOptions');
+      container.innerHTML = '';
+
+      choices.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-opt-btn';
+        const label = opt.translation.length > 80 ? opt.translation.substring(0, 78) + '...' : opt.translation;
+        btn.textContent = label;
+        btn.onclick = () => selectQuizAnswer(opt.id === current.id, btn, current.id);
+        container.appendChild(btn);
+      });
+    }
+
+    function selectQuizAnswer(isCorrect, clickedBtn, correctId) {
+      const allBtns = document.querySelectorAll('.quiz-opt-btn');
+      allBtns.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        clickedBtn.classList.add('correct');
+        playBeep('correct');
+        quizScore++;
+      } else {
+        clickedBtn.classList.add('wrong');
+        playBeep('wrong');
+        allBtns.forEach(b => {
+          const match = quizPool.find(c => c.id === correctId);
+          if (match && b.textContent.startsWith(match.translation.substring(0, 20))) {
+            b.classList.add('correct');
+          }
+        });
+      }
+
+      document.getElementById('quizScoreText').textContent = `Doğru: ${quizScore} / ${quizPool.length}`;
+      document.getElementById('btnNextQuiz').style.display = 'inline-flex';
+    }
+
+    // ==================== MATCH GAME LOGIC ====================
+    let selectedTile = null;
+    let matchedPairsCount = 0;
+
+    function startMatchGame() {
+      matchedPairsCount = 0;
+      selectedTile = null;
+
+      const currentDeck = decksData.find(d => d.id === selectedDeckId) || decksData[0];
+      const pool = currentDeck ? currentDeck.cards : [];
+
+      if (!pool || pool.length < 2) {
+        document.getElementById('matchGrid').innerHTML = '<p style="grid-column:1/-1; text-align:center;">Eşleştirme oyunu için bu destede en az 2 kart gereklidir.</p>';
+        return;
+      }
+
+      const count = Math.min(6, pool.length);
+      const sample = [...pool].sort(() => Math.random() - 0.5).slice(0, count);
+      let matchPairs = [];
+
+      sample.forEach(item => {
+        matchPairs.push({ id: item.id, text: item.term, type: 'en' });
+        const shortTr = item.translation.split(',')[0].trim();
+        matchPairs.push({ id: item.id, text: shortTr, type: 'tr' });
+      });
+
+      matchPairs.sort(() => Math.random() - 0.5);
+
+      const grid = document.getElementById('matchGrid');
+      grid.innerHTML = '';
+
+      matchPairs.forEach(tileData => {
+        const tile = document.createElement('div');
+        tile.className = 'match-tile';
+        tile.textContent = tileData.text;
+        tile.dataset.id = tileData.id;
+        tile.dataset.type = tileData.type;
+        tile.onclick = () => handleTileClick(tile, count);
+        grid.appendChild(tile);
+      });
+
+      document.getElementById('matchStatusText').textContent = `Eşleşen: 0 / ${count} çift`;
+    }
+
+    function handleTileClick(tile, totalPairs) {
+      if (tile.classList.contains('matched') || tile === selectedTile) return;
+
+      if (!selectedTile) {
+        selectedTile = tile;
+        tile.classList.add('selected');
+      } else {
+        const first = selectedTile;
+        const second = tile;
+
+        if (first.dataset.id === second.dataset.id && first.dataset.type !== second.dataset.type) {
+          playBeep('correct');
+          first.classList.remove('selected');
+          first.classList.add('matched');
+          second.classList.add('matched');
+          matchedPairsCount++;
+          document.getElementById('matchStatusText').textContent = `Eşleşen: ${matchedPairsCount} / ${totalPairs} çift`;
+          selectedTile = null;
+
+          if (matchedPairsCount === totalPairs) {
+            setTimeout(() => {
+              alert('👏 Harika! Tüm çiftleri başarıyla eşleştirdiniz!');
+            }, 300);
+          }
+        } else {
+          playBeep('wrong');
+          second.classList.add('mismatch');
+          first.classList.add('mismatch');
+
+          setTimeout(() => {
+            first.classList.remove('selected', 'mismatch');
+            second.classList.remove('mismatch');
+            selectedTile = null;
+          }, 600);
+        }
+      }
+    }
+
+    // ==================== MANAGER LIST & CRUD ====================
+    function renderManagerList() {
+      const listEl = document.getElementById('managerCardList');
+      if (!listEl) return;
+      listEl.innerHTML = '';
+
+      const currentDeck = decksData.find(d => d.id === selectedDeckId) || decksData[0];
+      let pool = currentDeck ? (currentDeck.cards || []) : [];
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        pool = pool.filter(c => 
+          (c.term && c.term.toLowerCase().includes(q)) || 
+          (c.translation && c.translation.toLowerCase().includes(q)) ||
+          (c.example && c.example.toLowerCase().includes(q))
+        );
+      }
+
+      if (pool.length === 0) {
+        listEl.innerHTML = '<div style="text-align:center; padding: 24px; color:var(--text-muted);">Kart bulunamadı.</div>';
+        return;
+      }
+
+      pool.forEach(card => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        const hasSentence = !!(card.example && card.example.trim());
+        item.innerHTML = `
+          <div class="list-item-info" onclick="openEditModal('${card.id}')" style="cursor:pointer;" title="Düzenlemek ve cümle eklemek için tıkla">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="list-item-en">${escapeHtml(card.term)}</span>
+              ${hasSentence ? '<span class="badge-sentence-pill" title="Örnek cümle mevcut">💬 Cümleli</span>' : '<span class="badge-no-sentence-pill">+ Cümle Ekle</span>'}
+            </div>
+            <span class="list-item-tr">${escapeHtml(card.translation)}</span>
+            ${hasSentence ? `<div class="list-item-sentence-preview">“${escapeHtml(card.example)}”</div>` : ''}
+          </div>
+          <div style="display:flex; gap:4px; align-items:center;">
+            <button class="edit-btn" title="Kartı Düzenle / Cümle Ekle" onclick="openEditModal('${card.id}')">✏️</button>
+            <button class="delete-btn" title="Sil" onclick="deleteCard('${card.id}')">🗑️</button>
+          </div>
+        `;
+        listEl.appendChild(item);
+      });
+    }
+
+    // Open Edit Modal for any card ID
+    window.openEditModal = function(id) {
+      // Search in current deck or across all decks
+      let foundCard = null;
+      let foundDeck = decksData.find(d => d.id === selectedDeckId);
+      if (foundDeck && foundDeck.cards) {
+        foundCard = foundDeck.cards.find(c => String(c.id) === String(id));
+      }
+      if (!foundCard) {
+        for (const d of decksData) {
+          const match = (d.cards || []).find(c => String(c.id) === String(id));
+          if (match) {
+            foundCard = match;
+            foundDeck = d;
+            break;
+          }
+        }
+      }
+
+      if (!foundCard) return;
+
+      document.getElementById('editCardId').value = foundCard.id;
+      document.getElementById('editTerm').value = foundCard.term || '';
+      document.getElementById('editTranslation').value = foundCard.translation || '';
+      document.getElementById('editExample').value = foundCard.example || '';
+      document.getElementById('editExampleTranslation').value = foundCard.exampleTranslation || '';
+
+      const modal = document.getElementById('editCardModal');
+      modal.style.display = 'flex';
+
+      setTimeout(() => {
+        const exInput = document.getElementById('editExample');
+        if (exInput) exInput.focus();
+      }, 60);
+    };
+
+    window.closeEditModal = function() {
+      const modal = document.getElementById('editCardModal');
+      if (modal) modal.style.display = 'none';
+    };
+
+    function editCurrentCard() {
+      if (!currentCards || currentCards.length === 0) return;
+      const current = currentCards[currentIndex];
+      if (current) openEditModal(current.id);
+    }
+
+    // Edit Form Submission
+    document.getElementById('editCardForm').onsubmit = (e) => {
+      e.preventDefault();
+      const cardId = document.getElementById('editCardId').value;
+      const term = document.getElementById('editTerm').value.trim();
+      const translation = document.getElementById('editTranslation').value.trim();
+      const example = document.getElementById('editExample').value.trim();
+      const exampleTranslation = document.getElementById('editExampleTranslation').value.trim();
+
+      let targetCard = null;
+      for (const d of decksData) {
+        const found = (d.cards || []).find(c => String(c.id) === String(cardId));
+        if (found) {
+          targetCard = found;
+          break;
+        }
+      }
+
+      if (targetCard) {
+        targetCard.term = term;
+        targetCard.translation = translation;
+        targetCard.example = example;
+        targetCard.exampleTranslation = exampleTranslation;
+
+        persistDecks();
+        updateActiveCardSet();
+        renderManagerList();
+        closeEditModal();
+        alert('🎉 Kart ve cümleler başarıyla güncellendi!');
+      }
+    };
+
+    window.deleteCard = function(id) {
+      if (!confirm('Bu kartı silmek istediğinize emin misiniz?')) return;
+      const currentDeck = decksData.find(d => d.id === selectedDeckId);
+      if (currentDeck && currentDeck.cards) {
+        currentDeck.cards = currentDeck.cards.filter(c => String(c.id) !== String(id));
+      }
+      persistDecks();
+      renderDeckSelector();
+      updateActiveCardSet();
+    };
+
+    // Card Add Form (Simple: Word, Translation, Sentence)
+    document.getElementById('cardForm').onsubmit = (e) => {
+      e.preventDefault();
+      const term = document.getElementById('inputEn').value.trim();
+      const translation = document.getElementById('inputTr').value.trim();
+      const targetDeckId = document.getElementById('selectTargetDeck').value;
+      const example = document.getElementById('inputSentenceEn').value.trim();
+      const exampleTranslation = document.getElementById('inputSentenceTr').value.trim();
+
+      const newCard = {
+        id: 'c_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+        term,
+        translation,
+        example,
+        exampleTranslation,
+        status: 'new',
+        addedAt: Date.now()
+      };
+
+      const targetDeck = decksData.find(d => d.id === targetDeckId) || decksData[0];
+      if (!targetDeck.cards) targetDeck.cards = [];
+      targetDeck.cards.unshift(newCard);
+
+      persistDecks();
+      renderDeckSelector();
+      updateActiveCardSet();
+      e.target.reset();
+      alert(`✅ "${term}" kartı "${targetDeck.name}" destesine eklendi!`);
+    };
+
+    // Live Search
+    document.getElementById('cardSearchInput').oninput = (e) => {
+      searchQuery = e.target.value;
+      renderManagerList();
+    };
+
+    // ==================== UNIVERSAL IMPORT ====================
+    function parseImportInput(rawText) {
+      if (!rawText || !rawText.trim()) return null;
+      const input = rawText.trim();
+
+      // Check JSON decks or cards
+      if (input.startsWith('{') || input.startsWith('[')) {
+        try {
+          const parsed = JSON.parse(input);
+          if (parsed.decks && Array.isArray(parsed.decks)) {
+            return { mode: 'decks', data: parsed.decks };
+          } else if (Array.isArray(parsed)) {
+            return { mode: 'cards', data: parsed };
+          }
+        } catch(e) {}
+      }
+
+      // Plain text lines
+      const lines = input.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+      const cards = [];
+      lines.forEach((line, idx) => {
+        line = line.replace(/^[\d]+[\.\)\-\:]\s*/, '').trim();
+        let parts = line.split(/[=\-:\t/]/);
+        if (parts.length >= 2) {
+          cards.push({
+            id: 'imp_' + Date.now() + '_' + idx,
+            term: parts[0].trim(),
+            translation: parts.slice(1).join(' ').trim(),
+            example: '',
+            exampleTranslation: '',
+            status: 'new',
+            addedAt: Date.now()
+          });
+        }
+      });
+
+      return cards.length > 0 ? { mode: 'cards', data: cards } : null;
+    }
+
+    const bulkTextarea = document.getElementById('bulkImportTextarea');
+    document.getElementById('btnAppendBulk').onclick = () => {
+      const res = parseImportInput(bulkTextarea.value);
+      if (!res) {
+        alert('❌ Geçerli kelime veya veri algılanamadı.');
+        return;
+      }
+
+      if (res.mode === 'decks') {
+        decksData.push(...res.data);
+      } else {
+        const targetDeck = decksData.find(d => d.id === selectedDeckId) || decksData[0];
+        if (!targetDeck.cards) targetDeck.cards = [];
+        targetDeck.cards.push(...res.data);
+      }
+
+      persistDecks();
+      renderDeckSelector();
+      updateActiveCardSet();
+      bulkTextarea.value = '';
+      alert('🎉 Kartlar başarıyla eklendi!');
+    };
+
+    document.getElementById('btnReplaceBulk').onclick = () => {
+      const res = parseImportInput(bulkTextarea.value);
+      if (!res) {
+        alert('❌ Geçerli veri algılanamadı.');
+        return;
+      }
+      if (confirm('Seçili destenin içeriği değiştirilecek. Onaylıyor musunuz?')) {
+        if (res.mode === 'decks') {
+          decksData = res.data;
+          selectedDeckId = decksData[0] ? decksData[0].id : '';
+        } else {
+          const targetDeck = decksData.find(d => d.id === selectedDeckId) || decksData[0];
+          targetDeck.cards = res.data;
+        }
+        persistDecks();
+        renderDeckSelector();
+        updateActiveCardSet();
+        bulkTextarea.value = '';
+        alert('🎉 Deste başarıyla güncellendi!');
+      }
+    };
+
+    // File Selector
+    const anyFileInput = document.getElementById('anyTextFileInput');
+    document.getElementById('btnUploadAnyFile').onclick = () => anyFileInput.click();
+    anyFileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        bulkTextarea.value = ev.target.result;
+        alert(`📂 "${file.name}" yüklendi! "Seçili Desteye Ekle" butonuna basarak içe aktarın.`);
+      };
+      reader.readAsText(file);
+      anyFileInput.value = '';
+    };
+
+    // Export to JSON
+    document.getElementById('btnExportJson').onclick = () => {
+      const exportData = { decks: decksData };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "flash_kart_desteleri.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    };
+
+    // Reset to Builtin Defaults
+    document.getElementById('btnResetToDefaults').onclick = () => {
+      if (confirm('Tüm desteler orijinal haline sıfırlansın mı?')) {
+        localStorage.removeItem('vocabmaster_all_decks');
+        localStorage.removeItem('vocabmaster_unified_cards');
+        if (window.RAW_DECKS_DATA && window.RAW_DECKS_DATA.decks) {
+          decksData = JSON.parse(JSON.stringify(window.RAW_DECKS_DATA.decks));
+        }
+        selectedDeckId = decksData[0] ? decksData[0].id : '';
+        currentStatusFilter = 'all';
+        persistDecks();
+        renderDeckSelector();
+        setCardFilter('all');
+        alert('✅ Desteler başarıyla orijinal haline sıfırlandı!');
+      }
+    };
+
+    // ==================== EVENT LISTENERS & NAVIGATION ====================
+    document.getElementById('flashcard').onclick = toggleFlip;
+    document.getElementById('btnFlip').onclick = toggleFlip;
+    document.getElementById('btnNext').onclick = nextCard;
+    document.getElementById('btnPrev').onclick = prevCard;
+    document.getElementById('btnShuffle').onclick = shuffleCards;
+    document.getElementById('btnAgain').onclick = () => markCurrentCard('struggling');
+    document.getElementById('btnKnown').onclick = () => markCurrentCard('known');
+
+    document.getElementById('btnSwapDir').onclick = () => {
+      isDirectionEnTr = !isDirectionEnTr;
+      const currentDeck = decksData.find(d => d.id === selectedDeckId);
+      renderCard(currentDeck);
+    };
+
+    document.getElementById('btnSpeakFront').onclick = (e) => {
+      e.stopPropagation();
+      const card = currentCards[currentIndex];
+      if (card) speak(card.term);
+    };
+
+    const btnSpeakSentence = document.getElementById('btnSpeakSentence');
+    if (btnSpeakSentence) {
+      btnSpeakSentence.onclick = (e) => {
+        e.stopPropagation();
+        const card = currentCards[currentIndex];
+        if (card && card.example) speak(card.example);
+      };
+    }
+
+    document.getElementById('btnSpeakBack').onclick = (e) => {
+      e.stopPropagation();
+      const card = currentCards[currentIndex];
+      if (card) speak(card.example || card.term);
+    };
+
+    // Auto-Play
+    const btnAutoPlay = document.getElementById('btnAutoPlay');
+    btnAutoPlay.onclick = () => {
+      if (autoPlayInterval) {
+        clearInterval(autoPlayInterval);
+        autoPlayInterval = null;
+        btnAutoPlay.textContent = '▶️';
+        btnAutoPlay.title = 'Otomatik Oynat';
+      } else {
+        btnAutoPlay.textContent = '⏸️';
+        btnAutoPlay.title = 'Durdur';
+        autoPlayInterval = setInterval(() => {
+          if (!isFlipped) toggleFlip();
+          else nextCard();
+        }, 2600);
+      }
+    };
+
+    // Study tab switching
+    function switchStudyTab(tabKey) {
+      document.querySelectorAll('#viewStudyScreen .nav-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === tabKey);
+      });
+
+      const studyViews = {
+        cards: document.getElementById('view-cards'),
+        quiz: document.getElementById('view-quiz'),
+        match: document.getElementById('view-match')
+      };
+
+      Object.keys(studyViews).forEach(key => {
+        if (studyViews[key]) {
+          studyViews[key].style.display = (key === tabKey) ? (key === 'cards' ? 'flex' : 'block') : 'none';
+        }
+      });
+
+      if (tabKey === 'quiz') startQuiz();
+      if (tabKey === 'match') startMatchGame();
+    }
+
+    document.querySelectorAll('#viewStudyScreen .nav-tab').forEach(tab => {
+      tab.onclick = () => {
+        switchStudyTab(tab.dataset.tab);
+      };
+    });
+
+    // Home screen buttons
+    const btnHomeNewDeck = document.getElementById('btnHomeNewDeck');
+    if (btnHomeNewDeck) {
+      btnHomeNewDeck.onclick = () => {
+        const name = prompt('Yeni destenin adını girin:');
+        if (!name || !name.trim()) return;
+        const newD = {
+          id: 'deck_' + Date.now(),
+          name: name.trim(),
+          cards: []
+        };
+        decksData.push(newD);
+        persistDecks();
+        renderDeckHome();
+        alert(`✅ "${name.trim()}" destesi oluşturuldu!`);
+      };
+    }
+
+    const btnHomeSettings = document.getElementById('btnHomeSettings');
+    if (btnHomeSettings) btnHomeSettings.onclick = openSettings;
+
+    const btnBackToDecks = document.getElementById('btnBackToDecks');
+    if (btnBackToDecks) btnBackToDecks.onclick = showDeckHome;
+
+    const btnManageBackToDecks = document.getElementById('btnManageBackToDecks');
+    if (btnManageBackToDecks) btnManageBackToDecks.onclick = showDeckHome;
+
+    const btnStudySettings = document.getElementById('btnStudySettings');
+    if (btnStudySettings) btnStudySettings.onclick = openSettings;
+
+    document.getElementById('btnNextQuiz').onclick = () => {
+      quizCurrentIdx++;
+      renderQuizQuestion();
+    };
+
+    document.getElementById('btnRestartMatch').onclick = startMatchGame;
+
+    // Card Edit Button Bindings
+    const btnEditFront = document.getElementById('btnEditCurrentFront');
+    if (btnEditFront) {
+      btnEditFront.onclick = (e) => {
+        e.stopPropagation();
+        editCurrentCard();
+      };
+    }
+
+    const btnEditBack = document.getElementById('btnEditCurrentBack');
+    if (btnEditBack) {
+      btnEditBack.onclick = (e) => {
+        e.stopPropagation();
+        editCurrentCard();
+      };
+    }
+
+    const btnAddSentenceHint = document.getElementById('btnAddSentenceHint');
+    if (btnAddSentenceHint) {
+      btnAddSentenceHint.onclick = (e) => {
+        e.stopPropagation();
+        editCurrentCard();
+      };
+    }
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Close modal on Escape
+      if (e.key === 'Escape') {
+        closeEditModal();
+        return;
+      }
+
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+
+      const modalEl = document.getElementById('editCardModal');
+      if (modalEl && modalEl.style.display !== 'none') return;
+
+      const studyContainer = document.getElementById('viewStudyScreen');
+      if (!studyContainer || studyContainer.style.display === 'none') return;
+
+      const activeTabEl = document.querySelector('#viewStudyScreen .nav-tab.active');
+      if (!activeTabEl || activeTabEl.dataset.tab !== 'cards') return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        toggleFlip();
+      } else if (e.code === 'ArrowRight') {
+        nextCard();
+      } else if (e.code === 'ArrowLeft') {
+        prevCard();
+      } else if (e.key === '1') {
+        markCurrentCard('struggling');
+      } else if (e.key === '2') {
+        markCurrentCard('known');
+      } else if (e.key.toLowerCase() === 'e') {
+        editCurrentCard();
+      } else if (e.key.toLowerCase() === 's') {
+        const card = currentCards[currentIndex];
+        if (card) speak(card.term);
+      }
+    });
+
+    // Run on startup
+    initDecks();
+    showDeckHome();
+  </script>
+</body>
+</html>
